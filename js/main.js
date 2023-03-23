@@ -39,7 +39,79 @@ function startGame() {
 
 function createScene() {
     let scene = new BABYLON.Scene(engine);
-    let ground = createGround(scene);
+    // let ground = createGround(scene);
+    
+        // Load the glTF model and get the root node of the scene
+        const gr = BABYLON.SceneLoader.ImportMesh("", "models/source/3d.glb", "", scene, function (meshes) {
+
+            const rootNode = meshes[0];
+          
+            // Enable physics for the root node and all its children
+          
+            rootNode.getChildMeshes().forEach(function (mesh) {
+          
+              mesh.physicsImpostor = new BABYLON.PhysicsImpostor(mesh, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 }, scene);
+          
+              mesh.checkCollisions = true; // Enable collision detection for each mesh
+          
+            });
+          
+            // Set the ground mesh as the root node's child with the lowest Y position
+          
+            let ground = null;
+          
+            let minY = Number.POSITIVE_INFINITY;
+          
+            console.log(minY)
+          
+            rootNode.getChildMeshes().forEach(function (mesh) {
+          
+              if (mesh.position.y < minY) {
+          
+                ground = mesh;
+          
+                minY = mesh.position.y;
+          
+              }
+          
+            });
+          
+            ground.checkCollisions = true; // Enable collision detection for the ground mesh
+          
+            rootNode.position= new BABYLON.Vector3(130,0,-1);
+          
+            rootNode.scaling = new BABYLON.Vector3(100, 100, 100); // Set the scaling of the root node
+          
+            // Callback function to be called when the ground mesh is created
+          
+            function onGroundCreated() {
+          
+              // Do something with the ground mesh, if needed
+          
+            }
+          
+            // Call the onGroundCreated callback function
+          
+            onGroundCreated();
+          
+          });
+          
+    
+    
+    // let ground = BABYLON.SceneLoader.ImportMesh("", "models/source/3d.glb", "", scene, function (newMeshes) {
+    //     // Set the position and scaling of the ground mesh
+    //     var gr = newMeshes[0];
+    //     gr.position = new BABYLON.Vector3(0, 0, 30);
+    //     gr.scaling = new BABYLON.Vector3(100,100, 100);
+    
+    //     // Apply a material to the ground mesh
+    //     var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+    //     groundMaterial.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+    //     gr.material = groundMaterial;
+    //     gr.checkCollisions=true
+    //     gr.enablePhysics
+        
+    // });
     let freeCamera = createFreeCamera(scene);
 
     let tank = createTank(scene);
@@ -60,8 +132,16 @@ function createScene() {
       
         // Créer la sphère
         const sphere = BABYLON.MeshBuilder.CreateSphere(`sphere${i}`, { diameter: size }, scene);
-          
-        BABYLON.SceneLoader.ImportMesh("", "images/", "grass.png", scene)
+        const rock = BABYLON.SceneLoader.ImportMesh("", "models/stone/", "bigstone.glb", scene,(newMeshes, particleSystems, skeletons) => {
+            let r=newMeshes[0];
+            r.position = new BABYLON.Vector3(0,0,0);
+            r.scaling = new BABYLON.Vector3(8,8,8)
+            r.position.x=-x
+            r.position.y=-y
+            r.position.z=-z
+        })
+    
+        
       
         // Positionner la sphère
         sphere.position.x = x;
@@ -119,7 +199,7 @@ function createLights(scene) {
     sun.diffuse = new BABYLON.Color3(1, 1, 1);
 
     //Créer une animation pour la transition entre jour et nuit
-    var animation = new BABYLON.Animation("lightAnimation", "intensity", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+    var animation = new BABYLON.Animation("lightAnimation", "intensity", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
     //Créer des clés d'animation pour passer du jour à la nuit
     var keys1 = [];
@@ -171,7 +251,7 @@ function createFollowCamera(scene, target) {
 	camera.heightOffset = 14; // how high above the object to place the camera
 	camera.rotationOffset = 180; // the viewing angle
 	camera.cameraAcceleration = .1; // how fast to move
-	camera.maxCameraSpeed = 5; // speed limit
+	camera.maxCameraSpeed = 100; // speed limit
     return camera;
 
 }
@@ -198,7 +278,7 @@ function createTank(scene) {
 
     // By default the box/tank is in 0, 0, 0, let's change that...
     tank.position.y = 2;
-    tank.speed = 1;
+    tank.speed = 4;
     tank.frontVector = new BABYLON.Vector3(0, 0, 1);
 
     tank.move = () => {
@@ -264,7 +344,7 @@ function createTank(scene) {
         // position the cannonball above the tank
         cannonball.position = new BABYLON.Vector3(pos.x, pos.y+1, pos.z);
         // move cannonBall position from above the center of the tank to above a bit further than the frontVector end (5 meter s further)
-        cannonball.position.addInPlace(this.frontVector.multiplyByFloats(5, 5, 5));
+        cannonball.position.addInPlace(this.frontVector.multiplyByFloats(10, 10,10));
 
         // add physics to the cannonball, mass must be non null to see gravity apply
         cannonball.physicsImpostor = new BABYLON.PhysicsImpostor(cannonball,
@@ -272,9 +352,9 @@ function createTank(scene) {
 
         // the cannonball needs to be fired, so we need an impulse !
         // we apply it to the center of the sphere
-        let powerOfFire = 100;
+        let powerOfFire = 200;
         let azimuth = 0.1; 
-        let aimForceVector = new BABYLON.Vector3(this.frontVector.x*powerOfFire, (this.frontVector.y+azimuth)*powerOfFire,this.frontVector.z*powerOfFire);
+        let aimForceVector = new BABYLON.Vector3(this.frontVector.x*powerOfFire*1.4, (this.frontVector.y+azimuth)*powerOfFire,this.frontVector.z*powerOfFire*1.4);
         
         cannonball.physicsImpostor.applyImpulse(aimForceVector,cannonball.getAbsolutePosition());
 

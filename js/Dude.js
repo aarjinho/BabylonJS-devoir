@@ -6,9 +6,9 @@ export default class Dude {
         this.scaling = scaling;
 
         if(speed)
-            this.speed = speed;
+            this.speed = speed + 0.5;
         else
-            this.speed = 1;
+            this.speed = 2;
 
         // in case, attach the instance to the mesh itself, in case we need to retrieve
         // it after a scene.getMeshByName that would return the Mesh
@@ -42,7 +42,7 @@ export default class Dude {
         // follow the tank
         let tank = scene.getMeshByName("heroTank");
         // let's compute the direction vector that goes from Dude to the tank
-        let direction = tank.position.subtract({_isDirty: true, _x: 0, _y: 0, _z: 5})
+        let direction = tank.position.subtract({_isDirty: true, _x: 0, _y: 0, _z: 0})
 
         let distance = direction.length(); // we take the vector that is not normalized, not the dir vector
         //console.log(distance);
@@ -59,11 +59,11 @@ export default class Dude {
         // let make the Dude move towards the tank
         // first let's move the bounding box mesh
         if (direction._x>=1){
-            direction={_isDirty:true,_x:1,_y:-1,_z:5}
+            direction={_isDirty:true,_x:1,_y:1,_z:0}
             console.log("true")
         }
         if(direction._x<=-1){
-            direction={_isDirty:true,_x:-1,_y:-1,_z:5}
+            direction={_isDirty:true,_x:-1,_y:1,_z:5}
         }
         if(distance > 30) {
             //a.restart();   
