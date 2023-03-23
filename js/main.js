@@ -39,7 +39,7 @@ function startGame() {
 
 function createScene() {
     let scene = new BABYLON.Scene(engine);
-    // let ground = createGround(scene);
+    let ground = createGround(scene);
     
         // Load the glTF model and get the root node of the scene
         const gr = BABYLON.SceneLoader.ImportMesh("", "models/source/3d.glb", "", scene, function (meshes) {
@@ -134,7 +134,7 @@ function createScene() {
         const sphere = BABYLON.MeshBuilder.CreateSphere(`sphere${i}`, { diameter: size }, scene);
         const rock = BABYLON.SceneLoader.ImportMesh("", "models/stone/", "bigstone.glb", scene,(newMeshes, particleSystems, skeletons) => {
             let r=newMeshes[0];
-            r.position = new BABYLON.Vector3(0,0,0);
+            r.position = new BABYLON.Vector3(-x,0,-y);
             r.scaling = new BABYLON.Vector3(8,8,8)
             r.position.x=-x
             r.position.y=-y
