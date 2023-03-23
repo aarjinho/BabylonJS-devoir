@@ -134,10 +134,10 @@ function createScene() {
         const sphere = BABYLON.MeshBuilder.CreateSphere(`sphere${i}`, { diameter: size }, scene);
         const rock = BABYLON.SceneLoader.ImportMesh("", "models/stone/", "bigstone.glb", scene,(newMeshes, particleSystems, skeletons) => {
             let r=newMeshes[0];
-            r.position = new BABYLON.Vector3(-x,0,-y);
+            r.position = new BABYLON.Vector3(0,0,0);
             r.scaling = new BABYLON.Vector3(8,8,8)
             r.position.x=-x
-            r.position.y=-y
+            r.position.y=-z
             r.position.z=-z
         })
     
